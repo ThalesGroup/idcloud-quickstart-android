@@ -1,0 +1,3 @@
+include ':app', ':sdk'
+
+project(":sdk").projectDir = file("../01-ProjectSetup/sdk")

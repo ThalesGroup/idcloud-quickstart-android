@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Mobile Protector Sample</string>
+
+    <string name="sdk_version_placeholder">Mobile Protector SDK version: %s</string>
+    <string name="sdk_error_placeholder">Domain: %d Code: %d\nMessage: %s</string>
+
+	<!--Provision Fragment-->
+    <string name="title_provisioning">Provisioning</string>
+    <string name="user_id_provision_fragment">Enter User ID</string>
+    <string name="enter_reg_code_provision_fragment">Enter Registration Code</string>
+    <string name="btn_provision">Provision</string>
+    <string name="provisioning_in_progress">Provisioning in progress</string>
+    <string name="btn_remove_token">Remove Token</string>
+
+    <!--OTP Fragment-->
+    <string name="generate_otp_fragment">One Time Password</string>
+    <string name="otp_expired">OTP expired</string>
+    <string name="otp_validity_placeholder">OTP validity time: %ds</string>
+    <string name="btn_generate_otp">Generate OTP</string>
+
+</resources>
