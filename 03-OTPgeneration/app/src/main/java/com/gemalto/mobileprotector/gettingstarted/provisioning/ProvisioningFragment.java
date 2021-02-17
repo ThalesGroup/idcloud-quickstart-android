@@ -49,7 +49,6 @@ import com.gemalto.mobileprotector.gettingstarted.util.token.TokenAwareView;
  */
 public class ProvisioningFragment extends Fragment implements TokenAwareView {
 
-
     private ProvisioningFragmentDelegate mDelegate;
 
     private EditText mUserId;
@@ -59,15 +58,17 @@ public class ProvisioningFragment extends Fragment implements TokenAwareView {
     private Button mRemoveToken;
 
 
-    public void setDelegate(final ProvisioningFragmentDelegate delegate) {
+    public void setDelegate(ProvisioningFragmentDelegate delegate) {
         mDelegate = delegate;
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater,
-                             final ViewGroup container,
-                             final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_provisioning, container, false);
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState
+    ) {
+        View view = inflater.inflate(R.layout.fragment_provisioning, container, false);
 
         mUserId = view.findViewById(R.id.et_user_id);
         mRegCode = view.findViewById(R.id.et_reg_code);
@@ -77,21 +78,19 @@ public class ProvisioningFragment extends Fragment implements TokenAwareView {
             @Override
             public void onClick(final View view) {
 
-                final String userId = mUserId.getText().toString();
-                final String regCode = mRegCode.getText().toString();
+                String userId = mUserId.getText().toString();
+                String regCode = mRegCode.getText().toString();
 
                 if (userId.isEmpty() || regCode.isEmpty()) {
                     Toast.makeText(getActivity(), "User ID and Registration Code cannot be empty.", Toast.LENGTH_LONG)
-                         .show();
+                            .show();
                     return;
                 }
 
-                final SecureString regCodeSecureString = IdpCore.getInstance().getSecureContainerFactory()
-                                                                .fromString(regCode);
+                SecureString regCodeSecureString = IdpCore.getInstance().getSecureContainerFactory()
+                        .fromString(regCode);
 
-
-
-                if(mDelegate != null) mDelegate.onProvision(userId, regCodeSecureString);
+                if (mDelegate != null) mDelegate.onProvision(userId, regCodeSecureString);
             }
         });
 
@@ -100,12 +99,15 @@ public class ProvisioningFragment extends Fragment implements TokenAwareView {
             @Override
             public void onClick(final View view) {
 
+                if (getContext() == null) return;
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setMessage("Are you sure to remove the provisioned token?");
                 builder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
-                        if(mDelegate != null) mDelegate.onRemoveToken(mUserId.getText().toString());
+                        if (mDelegate != null)
+                            mDelegate.onRemoveToken(mUserId.getText().toString());
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -116,7 +118,6 @@ public class ProvisioningFragment extends Fragment implements TokenAwareView {
 
                 AlertDialog alert = builder.create();
                 alert.show();
-
             }
         });
 
@@ -124,15 +125,13 @@ public class ProvisioningFragment extends Fragment implements TokenAwareView {
     }
 
     @Override
-    public void updateView(final OathToken token) {
-
+    public void updateView( OathToken token) {
         boolean isTokenProvisioned = token != null;
 
-        if(isTokenProvisioned){
+        if (isTokenProvisioned) {
             mUserId.setText(token.getName());
             mRegCode.setText("------");
-        }
-        else{
+        } else {
             mUserId.setText("");
             mRegCode.setText("");
         }
@@ -142,7 +141,5 @@ public class ProvisioningFragment extends Fragment implements TokenAwareView {
 
         mProvision.setEnabled(!isTokenProvisioned);
         mRemoveToken.setEnabled(isTokenProvisioned);
-
     }
-
 }

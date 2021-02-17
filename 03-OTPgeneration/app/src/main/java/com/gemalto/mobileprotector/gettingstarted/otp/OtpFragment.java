@@ -60,37 +60,37 @@ public class OtpFragment extends Fragment implements TokenAwareView {
 
     private CountDownTimer mLifeSpanCountDown;
 
-
     @Override
-    public View onCreateView(final LayoutInflater inflater,
-                             final ViewGroup container,
-                             final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_otp, container, false);
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState
+    ) {
+        View view = inflater.inflate(R.layout.fragment_otp, container, false);
 
         mOtpTextView = view.findViewById(R.id.tv_otp_id);
         mOtpLifeSpanView = view.findViewById(R.id.tv_otp_lifespan);
 
-
         mBtnGenerate = view.findViewById(R.id.btn_generate_otp);
         mBtnGenerate.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View view) {
+            public void onClick(View view) {
+                if (getActivity() == null) return;
+
                 OtpLogic.getUserPin((AppCompatActivity) getActivity(), new OtpPinCallback() {
                     @Override
-                    public void onPinSuccess(@NonNull final PinAuthInput pin) {
+                    public void onPinSuccess(@NonNull PinAuthInput pin) {
+                        OtpResult otpResult = getOtp(pin);
 
-                        final OtpResult otpResult = getOtp(pin);
-
-                        if(otpResult.isValid()) {
-
+                        if (otpResult.isValid()) {
                             mOtpTextView.setText(otpResult.getOtp());
 
                             mLifeSpanCountDown = new CountDownTimer(otpResult.getLifeSpan() * 1000, 1000) {
                                 @Override
-                                public void onTick(final long millisRemaining) {
-                                    final String lifeSpanText = String.format(Locale.getDefault(),
-                                                                              getString(R.string.otp_validity_placeholder),
-                                                                              millisRemaining / 1000 + 1);
+                                public void onTick(long millisRemaining) {
+                                    String lifeSpanText = String.format(Locale.getDefault(),
+                                            getString(R.string.otp_validity_placeholder),
+                                            millisRemaining / 1000 + 1);
 
                                     mOtpLifeSpanView.setText(lifeSpanText);
                                 }
@@ -100,18 +100,16 @@ public class OtpFragment extends Fragment implements TokenAwareView {
                                     mOtpLifeSpanView.setText(R.string.otp_expired);
                                 }
                             }.start();
-                        }
-                        else{
+                        } else {
                             mOtpTextView.setText("");
                             mOtpLifeSpanView.setText("");
                         }
-
                     }
 
                     @Override
-                    public void onPinError(@NonNull final String errorMessage) {
+                    public void onPinError(@NonNull String errorMessage) {
                         Toast.makeText(getActivity(), "Error getting user PIN: \n" + errorMessage, Toast.LENGTH_LONG)
-                             .show();
+                                .show();
 
                         mOtpTextView.setText("");
                         mOtpLifeSpanView.setText("");
@@ -127,28 +125,23 @@ public class OtpFragment extends Fragment implements TokenAwareView {
     /**
      * Generates an OTP.
      *
-     * @param pin
-     *         User authentication.
+     * @param pin User authentication.
      * @return Generated OTP and its lifespan wrapped in OtpResult class.
      */
-    private OtpResult getOtp(@NonNull final PinAuthInput pin) {
-
+    private OtpResult getOtp(@NonNull PinAuthInput pin) {
         try {
-            final SoftOathToken token = TokenUtils.getFirstToken();
-
-            if(token == null){
+            SoftOathToken token = TokenUtils.getFirstToken();
+            if (token == null)
                 throw new IllegalStateException("This should not be reached as the UI should have been disabled when token is not available.");
-            }
 
             return OtpLogic.generateOtp(token, pin);
 
         } catch (IdpException exception) {
-
-            final String errorMessage = String.format(Locale.getDefault(),
-                                                      getString(R.string.sdk_error_placeholder),
-                                                      exception.getDomain(),
-                                                      exception.getCode(),
-                                                      exception.getMessage());
+            String errorMessage = String.format(Locale.getDefault(),
+                    getString(R.string.sdk_error_placeholder),
+                    exception.getDomain(),
+                    exception.getCode(),
+                    exception.getMessage());
 
             Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
 
@@ -157,23 +150,19 @@ public class OtpFragment extends Fragment implements TokenAwareView {
     }
 
     @Override
-    public void updateView(final OathToken token) {
-
-        if(token == null){
+    public void updateView(OathToken token) {
+        if (token == null) {
             mBtnGenerate.setEnabled(false);
 
-
-            if(mLifeSpanCountDown != null) {
+            if (mLifeSpanCountDown != null) {
                 mLifeSpanCountDown.cancel();
                 mLifeSpanCountDown = null;
             }
 
             mOtpTextView.setText("");
             mOtpLifeSpanView.setText("");
-        }
-        else{
+        } else {
             mBtnGenerate.setEnabled(true);
         }
-
     }
 }

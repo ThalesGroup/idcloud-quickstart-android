@@ -27,12 +27,7 @@
 
 package com.gemalto.mobileprotector.gettingstarted;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
@@ -43,9 +38,9 @@ import com.gemalto.idp.mobile.core.IdpCore;
 import com.gemalto.idp.mobile.core.passwordmanager.PasswordManagerException;
 import com.gemalto.idp.mobile.otp.OtpConfiguration;
 import com.gemalto.mobileprotector.sdk.ProtectorConfig;
+import com.thalesgroup.gemalto.securelog.SecureLogConfig;
 
 import java.util.Locale;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
 
         ApplicationContextHolder.setContext(this);
 
-        final TextView versionTextView = findViewById(R.id.tv_protector_version);
+        TextView versionTextView = findViewById(R.id.tv_protector_version);
 
-        final String formattedVersion = String.format(Locale.getDefault(),
-                                                     getString(R.string.sdk_version_placeholder),
-                                                     IdpCore.getVersion());
+        String formattedVersion = String.format(Locale.getDefault(),
+                getString(R.string.sdk_version_placeholder),
+                IdpCore.getVersion());
         versionTextView.setText(formattedVersion);
 
         findViewById(R.id.root_layout).setOnClickListener(new View.OnClickListener() {
@@ -75,56 +70,28 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        final boolean doesHavePermissions = checkAndRequestPermissions();
-
-        if (doesHavePermissions) {
-            configureProtector();
-        }
-
+        configureProtector();
     }
 
+    private void updateStatus() {
 
-    /**
-     * Requests needed runtime permissions.
-     *
-     * @return {@code True} if application already has all needed permissions, {@code false} if permissions need to be
-     * requested.
-     */
-    protected boolean checkAndRequestPermissions() {
+        Toast.makeText(getApplicationContext(), "Refreshing configuration status ...", Toast.LENGTH_SHORT)
+                .show();
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-
-        final int permissionState = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
-
-        if (permissionState == PackageManager.PERMISSION_GRANTED){
-            return true;
-        }
-        else{
-            ActivityCompat.requestPermissions(this,
-                                              new String[]{Manifest.permission.READ_PHONE_STATE},
-                                              6497);    // just a random number used as a request code
-            return false;
-        }
-    }
-
-
-    private void updateStatus(){
-
-        Toast.makeText(this, "Refreshing configuration status ...", Toast.LENGTH_SHORT).show();
-
-        if(IdpCore.isConfigured()){
-            final TextView statusTextView = findViewById(R.id.tv_configuration_status);
+        if (IdpCore.isConfigured()) {
+            TextView statusTextView = findViewById(R.id.tv_configuration_status);
             statusTextView.setText(getString(R.string.configured));
         }
     }
 
-
-    private void configureProtector(){
+    private void configureProtector() {
         if (!IdpCore.isConfigured()) {
 
-            final OtpConfiguration otpConfiguration = new OtpConfiguration.Builder()
+            IdpCore.configureSecureLog(new SecureLogConfig.Builder(ApplicationContextHolder.getContext())
+                    .publicKey(ProtectorConfig.CFG_SLOG_MODULUS, ProtectorConfig.CFG_SLOG_EXPONENT)
+                    .build());
+
+            OtpConfiguration otpConfiguration = new OtpConfiguration.Builder()
                     .setRootPolicy(OtpConfiguration.TokenRootPolicy.IGNORE)
                     .build();
 
@@ -133,13 +100,11 @@ public class MainActivity extends AppCompatActivity {
             // Login to PasswordManager without a password so that the SDK’s persistent data
             // can be accessed during provisioning.
             try {
-                    IdpCore.getInstance().getPasswordManager().login();
-            } catch (final PasswordManagerException exception) {
+                IdpCore.getInstance().getPasswordManager().login();
+            } catch (PasswordManagerException exception) {
                 // this should not happen.
                 throw new IllegalStateException(exception);
             }
         }
     }
-
-
 }

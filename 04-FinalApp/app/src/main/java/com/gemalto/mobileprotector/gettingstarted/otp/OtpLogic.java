@@ -42,10 +42,10 @@ import com.gemalto.idp.mobile.otp.oath.OathService;
 import com.gemalto.idp.mobile.otp.oath.soft.SoftOathSettings;
 import com.gemalto.idp.mobile.otp.oath.soft.SoftOathToken;
 import com.gemalto.idp.mobile.ui.UiModule;
-import com.gemalto.idp.mobile.ui.secureinput.SecureInputBuilderV2;
+import com.gemalto.idp.mobile.ui.secureinput.SecureInputBuilder;
 import com.gemalto.idp.mobile.ui.secureinput.SecureInputService;
 import com.gemalto.idp.mobile.ui.secureinput.SecureInputUi;
-import com.gemalto.idp.mobile.ui.secureinput.SecurePinpadListenerV2;
+import com.gemalto.idp.mobile.ui.secureinput.SecureKeypadListener;
 import com.gemalto.mobileprotector.sdk.ProtectorConfig;
 
 /**
@@ -58,29 +58,26 @@ class OtpLogic {
     /**
      * Generates an OTP.
      *
-     * @param token
-     *         Token to be used for OTP generation.
-     * @param pin
-     *         PIN.
+     * @param token Token to be used for OTP generation.
+     * @param pin   PIN.
      * @return Generated OTP and its lifespan wrapped in OtpResult class.
-     * @throws IdpException
-     *         If error during OTP generation occures.
+     * @throws IdpException If error during OTP generation occures.
      */
-    static OtpResult generateOtp(@NonNull final SoftOathToken token, @NonNull final AuthInput pin)
+    static OtpResult generateOtp(@NonNull SoftOathToken token, @NonNull AuthInput pin)
             throws IdpException {
 
         try {
 
-            final OathFactory oathFactory = OathService.create(OtpModule.create()).getFactory();
-            final SoftOathSettings softOathSettings = oathFactory.createSoftOathSettings();
+            OathFactory oathFactory = OathService.create(OtpModule.create()).getFactory();
+            SoftOathSettings softOathSettings = oathFactory.createSoftOathSettings();
             softOathSettings.setOcraSuite(ProtectorConfig.Otp.getOcraSuite());
 
-            final OathDevice oathDevice = oathFactory.createSoftOathDevice(token, softOathSettings);
+            OathDevice oathDevice = oathFactory.createSoftOathDevice(token, softOathSettings);
 
-            final SecureString totp = oathDevice.getTotp(pin);
-            final int otpLifespan = oathDevice.getLastOtpLifespan();
+            SecureString totp = oathDevice.getTotp(pin);
+            int otpLifespan = oathDevice.getLastOtpLifespan();
 
-            final OtpResult otpResult = new OtpResult(totp.toString(), otpLifespan);
+            OtpResult otpResult = new OtpResult(totp.toString(), otpLifespan);
             totp.wipe();
 
             return otpResult;
@@ -93,21 +90,22 @@ class OtpLogic {
     /**
      * Retrieves the PIN.
      *
-     * @param activity
-     *         Activity on which to show the {@code DialogFragment}.
-     * @param callback
-     *         Callback to receive the PIN.
+     * @param activity Activity on which to show the {@code DialogFragment}.
+     * @param callback Callback to receive the PIN.
      */
-    static void getUserPin(@NonNull final AppCompatActivity activity, @NonNull final OtpPinCallback callback) {
-        final SecureInputBuilderV2 builder = SecureInputService.create(UiModule.create()).getSecureInputBuilderV2();
-        final SecureInputUi secureInputUi = builder.buildPinpad(false, false, false, new SecurePinpadListenerV2() {
+    static void getUserPin(
+            @NonNull AppCompatActivity activity,
+            @NonNull final OtpPinCallback callback
+    ) {
+        final SecureInputBuilder builder = SecureInputService.create(UiModule.create()).getSecureInputBuilder();
+        SecureInputUi secureInputUi = builder.buildKeypad(false, false, false, new SecureKeypadListener() {
             @Override
-            public void onKeyPressedCountChanged(final int count, final int inputField) {
+            public void onKeyPressedCountChanged(int count, int inputField) {
                 // Nothing to be done here, but it must be implemented and it could be used to customize the default behavior later
             }
 
             @Override
-            public void onInputFieldSelected(final int inputField) {
+            public void onInputFieldSelected(int inputField) {
                 // Nothing to be done here, but it must be implemented and it could be used to customize the default behavior later
             }
 
@@ -122,23 +120,21 @@ class OtpLogic {
             }
 
             @Override
-            public void onFinish(final PinAuthInput pinAuthInput, final PinAuthInput pinAuthInput1) {
+            public void onFinish(PinAuthInput pinAuthInput, PinAuthInput pinAuthInput1) {
                 callback.onPinSuccess(pinAuthInput);
-                builder.wipe();
                 sDialogFragment.dismiss();
+                builder.wipe();
             }
 
             @Override
             public void onError(final String errorMessage) {
                 callback.onPinError(errorMessage);
-                builder.wipe();
                 sDialogFragment.dismiss();
+                builder.wipe();
             }
         });
 
         sDialogFragment = secureInputUi.getDialogFragment();
         sDialogFragment.show(activity.getSupportFragmentManager(), "SECURE PIN");
     }
-
-
 }

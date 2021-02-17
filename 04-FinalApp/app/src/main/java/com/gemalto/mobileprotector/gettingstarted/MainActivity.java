@@ -27,14 +27,9 @@
 
 package com.gemalto.mobileprotector.gettingstarted;
 
-import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +48,7 @@ import com.gemalto.mobileprotector.gettingstarted.provisioning.ProvisioningFragm
 import com.gemalto.mobileprotector.gettingstarted.provisioning.ProvisioningLogic;
 import com.gemalto.mobileprotector.gettingstarted.util.token.TokenUtils;
 import com.gemalto.mobileprotector.sdk.ProtectorConfig;
+import com.thalesgroup.gemalto.securelog.SecureLogConfig;
 
 import java.util.Locale;
 
@@ -64,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements ProvisioningFragm
     private ProvisioningFragment mProvisioningFragment;
     private OtpFragment mOtpFragment;
 
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,15 +67,16 @@ public class MainActivity extends AppCompatActivity implements ProvisioningFragm
 
         ApplicationContextHolder.setContext(this);
 
-        final TextView versionTextView = findViewById(R.id.tv_protector_version);
+        TextView versionTextView = findViewById(R.id.tv_protector_version);
 
-        final String formattedVersion = String.format(Locale.getDefault(),
-                                                      getString(R.string.sdk_version_placeholder),
-                                                      IdpCore.getVersion());
+        String formattedVersion = String.format(Locale.getDefault(),
+                getString(R.string.sdk_version_placeholder),
+                IdpCore.getVersion());
         versionTextView.setText(formattedVersion);
 
         mProvisioningFragment = (ProvisioningFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_provisioning);
-        mProvisioningFragment.setDelegate(this);
+        if (mProvisioningFragment != null)
+            mProvisioningFragment.setDelegate(this);
 
         mOtpFragment = (OtpFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_otp);
     }
@@ -89,43 +85,16 @@ public class MainActivity extends AppCompatActivity implements ProvisioningFragm
     protected void onResume() {
         super.onResume();
 
-        final boolean doesHavePermissions = checkAndRequestPermissions();
-
-        if (doesHavePermissions) {
-            configureProtector();
-        }
+        configureProtector();
     }
 
-    /**
-     * Requests needed runtime permissions.
-     *
-     * @return {@code True} if application already has all needed permissions, {@code false} if permissions need to be
-     * requested.
-     */
-    protected boolean checkAndRequestPermissions() {
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-
-        final int permissionState = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
-
-        if (permissionState == PackageManager.PERMISSION_GRANTED){
-            return true;
-        }
-        else{
-            ActivityCompat.requestPermissions(this,
-                                              new String[]{Manifest.permission.READ_PHONE_STATE},
-                                              PERMISSION_REQUEST_CODE);
-            return false;
-        }
-    }
-
-
-    private void configureProtector(){
+    private void configureProtector() {
         if (!IdpCore.isConfigured()) {
+            IdpCore.configureSecureLog(new SecureLogConfig.Builder(ApplicationContextHolder.getContext())
+                    .publicKey(ProtectorConfig.CFG_SLOG_MODULUS, ProtectorConfig.CFG_SLOG_EXPONENT)
+                    .build());
 
-            final OtpConfiguration otpConfiguration = new OtpConfiguration.Builder()
+            OtpConfiguration otpConfiguration = new OtpConfiguration.Builder()
                     .setRootPolicy(OtpConfiguration.TokenRootPolicy.IGNORE)
                     .build();
 
@@ -134,13 +103,14 @@ public class MainActivity extends AppCompatActivity implements ProvisioningFragm
             // Login to PasswordManager without a password so that the SDK’s persistent data
             // can be accessed during provisioning.
             try {
-                    IdpCore.getInstance().getPasswordManager().login();
-            } catch (final PasswordManagerException exception) {
+                IdpCore.getInstance().getPasswordManager().login();
+            } catch (PasswordManagerException exception) {
                 // this should not happen during configuration time
                 throw new IllegalStateException(exception);
             }
 
-            Toast.makeText(this, "Protector configured OK", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Protector configured OK", Toast.LENGTH_LONG)
+                    .show();
 
             // Update UI with a provisioned token if any
             try {
@@ -152,16 +122,14 @@ public class MainActivity extends AppCompatActivity implements ProvisioningFragm
     }
 
 
-    private void updateViews(final OathToken token){
-
+    private void updateViews(OathToken token) {
         mProvisioningFragment.updateView(token);
         mOtpFragment.updateView(token);
     }
 
 
     @Override
-    public void onProvision(final String userId, final SecureString registrationCode) {
-
+    public void onProvision(String userId, SecureString registrationCode) {
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setTitle(R.string.provisioning_in_progress);
         progressDialog.show();
@@ -169,45 +137,50 @@ public class MainActivity extends AppCompatActivity implements ProvisioningFragm
         ProvisioningLogic
                 .provision(userId, registrationCode, new ProvisioningCallback() {
                     @Override
-                    public void onProvisioningSuccess(@NonNull final OathToken token) {
+                    public void onProvisioningSuccess(@NonNull OathToken token) {
                         progressDialog.dismiss();
 
                         updateViews(token);
 
-                        Toast.makeText(MainActivity.this, "Provisioning done OK.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this.getApplicationContext(), "Provisioning done OK.", Toast.LENGTH_LONG)
+                                .show();
                     }
 
                     @Override
-                    public void onProvisioningError(@NonNull final Exception exception) {
+                    public void onProvisioningError(@NonNull Exception exception) {
                         progressDialog.dismiss();
 
-                        Toast.makeText(MainActivity.this, "Provisioning failed.\n" + exception.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this.getApplicationContext(), "Provisioning failed.\n" + exception.getMessage(), Toast.LENGTH_LONG)
+                                .show();
                     }
                 });
     }
 
     @Override
-    public void onRemoveToken(final String tokenName) {
+    public void onRemoveToken(String tokenName) {
 
         try {
             if (TokenUtils.removeToken(tokenName)) {
 
                 updateViews(null);
 
-                Toast.makeText(MainActivity.this, "Token removed.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Token removed.", Toast.LENGTH_LONG)
+                        .show();
 
             } else {
-                Toast.makeText(this, "Token removal failed.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Token removal failed.", Toast.LENGTH_LONG)
+                        .show();
             }
-        } catch (final IdpException exception) {
+        } catch (IdpException exception) {
 
-            final String errorMessage = String.format(Locale.getDefault(),
-                                                      getString(R.string.sdk_error_placeholder),
-                                                      exception.getDomain(),
-                                                      exception.getCode(),
-                                                      exception.getMessage());
+            String errorMessage = String.format(Locale.getDefault(),
+                    getString(R.string.sdk_error_placeholder),
+                    exception.getDomain(),
+                    exception.getCode(),
+                    exception.getMessage());
 
-            Toast.makeText(this, "Token removal failed.\n" + errorMessage, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Token removal failed.\n" + errorMessage, Toast.LENGTH_LONG)
+                    .show();
         }
     }
 }

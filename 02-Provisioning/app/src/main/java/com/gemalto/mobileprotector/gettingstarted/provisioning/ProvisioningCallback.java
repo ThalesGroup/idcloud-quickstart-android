@@ -39,16 +39,14 @@ public interface ProvisioningCallback {
     /**
      * Callback for successful {@link ProvisioningLogic#provision(String, SecureString, ProvisioningCallback)}.
      *
-     * @param token
-     *         Created token.
+     * @param token Created token.
      */
     void onProvisioningSuccess(@NonNull OathToken token);
 
     /**
      * Error callback for {@link ProvisioningLogic#provision(String, SecureString, ProvisioningCallback)}.
      *
-     * @param exception
-     *         Exception occurred during provisioning
+     * @param exception Exception occurred during provisioning
      */
     void onProvisioningError(@NonNull Exception exception);
 }

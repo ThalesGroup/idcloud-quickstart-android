@@ -47,29 +47,25 @@ public class TokenUtils {
     /**
      * Retrieves an already provisioned token by its name.
      *
-     * @param name
-     *         Token name.
+     * @param name Token name.
      * @return Token.
-     * @throws IdpException
-     *         If error occurred.
+     * @throws IdpException If error occurred.
      */
     @Nullable
-    public static SoftOathToken getToken(@NonNull final String name) throws IdpException {
-        final OathTokenManager oathTokenManager = OathService.create(OtpModule.create()).getTokenManager();
+    public static SoftOathToken getToken(@NonNull String name) throws IdpException {
+        OathTokenManager oathTokenManager = OathService.create(OtpModule.create()).getTokenManager();
         return oathTokenManager.getToken(name);
     }
 
     /**
      * Removes the provisioned token by its name.
      *
-     * @param name
-     *         Token name.
+     * @param name Token name.
      * @return True in case of success, False in case of failure
-     * @throws IdpException
-     *         If error occurred.
+     * @throws IdpException If error occurred.
      */
-    public static boolean removeToken(@NonNull final String name) throws IdpException {
-        final OathTokenManager oathTokenManager = OathService.create(OtpModule.create()).getTokenManager();
+    public static boolean removeToken(@NonNull String name) throws IdpException {
+        OathTokenManager oathTokenManager = OathService.create(OtpModule.create()).getTokenManager();
         return oathTokenManager.removeToken(name);
     }
 
@@ -80,7 +76,7 @@ public class TokenUtils {
      */
     @Nullable
     public static Set<String> getTokenNames() {
-        final OathTokenManager oathTokenManager = OathService.create(OtpModule.create()).getTokenManager();
+        OathTokenManager oathTokenManager = OathService.create(OtpModule.create()).getTokenManager();
         try {
             return oathTokenManager.getTokenNames();
         } catch (IdpStorageException e) {
@@ -93,17 +89,15 @@ public class TokenUtils {
      * Retrieves first available token if any
      *
      * @return A provisioned {@code SoftOathToken} token or null if none found
-     * @throws IdpException
+     * @throws IdpException Any exception
      */
     public static SoftOathToken getFirstToken() throws IdpException {
-        final Set<String> tokenNames = getTokenNames();
+        Set<String> tokenNames = getTokenNames();
 
-        if(tokenNames.isEmpty()) {
+        if (tokenNames == null || tokenNames.isEmpty())
             return null;
-        }
-        else{
-            final String firstTokenName = tokenNames.iterator().next();
-            return getToken(firstTokenName);
-        }
+
+        String firstTokenName = tokenNames.iterator().next();
+        return getToken(firstTokenName);
     }
 }

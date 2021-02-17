@@ -59,13 +59,15 @@ public class ProvisioningLogic {
      * @param registrationCode Registration code.
      * @param callback         Callback back to the application - called on Main UI Thread.
      */
-    public static void provision(@NonNull final String userId,
-                                 @NonNull final SecureString registrationCode,
-                                 @NonNull final ProvisioningCallback callback) {
+    public static void provision(
+            @NonNull String userId,
+            @NonNull SecureString registrationCode,
+            @NonNull final ProvisioningCallback callback
+    ) {
         try {
-            final OathTokenManager oathTokenManager = OathService.create(OtpModule.create()).getTokenManager();
+            OathTokenManager oathTokenManager = OathService.create(OtpModule.create()).getTokenManager();
 
-            final ProvisioningConfiguration provisioningConfiguration = new EpsConfigurationBuilder(registrationCode,
+            ProvisioningConfiguration provisioningConfiguration = new EpsConfigurationBuilder(registrationCode,
                     ProtectorConfig.Provisioning.getProvisioningUrl(),
                     ProtectorConfig.DOMAIN,
                     MobileProvisioningProtocol.PROVISIONING_PROTOCOL_V5,
@@ -75,10 +77,10 @@ public class ProvisioningLogic {
                     .setTlsConfiguration(ProtectorConfig.Provisioning.getTlsConfiguration())
                     .build();
 
-            final DeviceFingerprintSource
+            DeviceFingerprintSource
                     deviceFingerprintSource = new DeviceFingerprintSource(ProtectorConfig.CUSTOM_FINGERPRINT_DATA,
                     DeviceFingerprintSource.Type.SOFT);
-            final DeviceFingerprintTokenPolicy
+            DeviceFingerprintTokenPolicy
                     deviceFingerprintTokenPolicy = new DeviceFingerprintTokenPolicy(true,
                     deviceFingerprintSource);
 
@@ -87,17 +89,19 @@ public class ProvisioningLogic {
                     deviceFingerprintTokenPolicy,
                     new TokenManager.TokenCreationCallback() {
                         @Override
-                        public void onSuccess(final Token token,
-                                              final Map<String, String> map) {
+                        public void onSuccess(
+                                Token token,
+                                Map<String, String> map
+                        ) {
                             callback.onProvisioningSuccess((OathToken) token);
                         }
 
                         @Override
-                        public void onError(final IdpException e) {
+                        public void onError(IdpException e) {
                             callback.onProvisioningError(e);
                         }
                     });
-        } catch (final MalformedURLException e) {
+        } catch (MalformedURLException e) {
             callback.onProvisioningError(e);
         } finally {
             registrationCode.wipe();

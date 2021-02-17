@@ -38,22 +38,24 @@ class OtpResult {
      */
     static final int OTP_GENERATION_FAILED = -1;
 
-    private String otp;
-    private int lifeSpan;
+    private final String otp;
+    private final int lifeSpan;
 
     /**
      * Constructor setting both OTP and lifespan
-     * @param otp   OTP value
+     *
+     * @param otp      OTP value
      * @param lifeSpan OTP lifespan in seconds
      */
-    OtpResult(final String otp, final int lifeSpan) {
+    OtpResult(String otp, int lifeSpan) {
         this.otp = otp;
         this.lifeSpan = lifeSpan;
     }
 
     /**
      * Provides OTP value
-     * @return  String value of the OTP
+     *
+     * @return String value of the OTP
      */
     String getOtp() {
         return otp;
@@ -62,6 +64,7 @@ class OtpResult {
 
     /**
      * Provides OTP lifespan
+     *
      * @return OTP lifespan in seconds
      */
     int getLifeSpan() {
@@ -70,9 +73,10 @@ class OtpResult {
 
     /**
      * Provides indication if the result is actually valid
+     *
      * @return True if the OTP is valid or False otherwise
      */
-    boolean isValid(){
+    boolean isValid() {
         return (lifeSpan != OTP_GENERATION_FAILED && otp != null);
     }
 

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Mobile Protector Sample</string>
-	
+
     <string name="sdk_version_placeholder">Mobile Protector SDK version: %s</string>
     <string name="configuration_pending">Configuration pending</string>
     <string name="configured">Configured</string>

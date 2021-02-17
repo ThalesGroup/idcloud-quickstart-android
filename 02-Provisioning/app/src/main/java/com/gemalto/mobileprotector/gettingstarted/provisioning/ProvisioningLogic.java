@@ -29,28 +29,7 @@ package com.gemalto.mobileprotector.gettingstarted.provisioning;
 
 import android.support.annotation.NonNull;
 
-import com.gemalto.idp.mobile.core.IdpException;
-import com.gemalto.idp.mobile.core.IdpNetworkException;
-import com.gemalto.idp.mobile.core.IdpStorageException;
-import com.gemalto.idp.mobile.core.devicefingerprint.DeviceFingerprintException;
-import com.gemalto.idp.mobile.core.devicefingerprint.DeviceFingerprintSource;
-import com.gemalto.idp.mobile.core.passwordmanager.PasswordManagerException;
 import com.gemalto.idp.mobile.core.util.SecureString;
-import com.gemalto.idp.mobile.otp.OtpModule;
-import com.gemalto.idp.mobile.otp.Token;
-import com.gemalto.idp.mobile.otp.TokenManager;
-import com.gemalto.idp.mobile.otp.devicefingerprint.DeviceFingerprintTokenPolicy;
-import com.gemalto.idp.mobile.otp.oath.OathService;
-import com.gemalto.idp.mobile.otp.oath.OathToken;
-import com.gemalto.idp.mobile.otp.oath.OathTokenManager;
-import com.gemalto.idp.mobile.otp.provisioning.EpsConfigurationBuilder;
-import com.gemalto.idp.mobile.otp.provisioning.MobileProvisioningProtocol;
-import com.gemalto.idp.mobile.otp.provisioning.ProvisioningConfiguration;
-import com.gemalto.mobileprotector.sdk.ProtectorConfig;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Map;
 
 /**
  * Logic for token provisioning using Mobile Protector SDK.
@@ -64,20 +43,21 @@ public class ProvisioningLogic {
      * @param registrationCode Registration code.
      * @param callback         Callback back to the application - called on Main UI Thread.
      */
-    public static void provision(@NonNull final String userId,
-                                 @NonNull final SecureString registrationCode,
-                                 @NonNull final ProvisioningCallback callback) {
+    public static void provision(
+            @NonNull String userId,
+            @NonNull SecureString registrationCode,
+            @NonNull ProvisioningCallback callback
+    ) {
         try {
             // TODO: create an OathTokenManager instance
 
-            // TODO: use EpsConfigurationBuilder and provide it configuration from ProtectorConfig filled in previous lesson
+            // TODO: use EpsConfigurationBuilder and provide its configuration from ProtectorConfig filled in previous lesson
 
-            // TODO: create devoce fingerprint data from ProtectorConfig
+            // TODO: create device fingerprint data from ProtectorConfig
 
             // TODO: call OathTokenManager.createToken() method with userId and ProvisioningConfiguration instance created in previous step
 
-
-        } catch (final Exception exception) {
+        } catch (Exception exception) {
             callback.onProvisioningError(exception);
         } finally {
             // TODO: don't forget to wipe the registration code

@@ -39,16 +39,14 @@ public interface OtpPinCallback {
     /**
      * Success callback for {@link OtpLogic#getUserPin(AppCompatActivity, OtpPinCallback)}.
      *
-     * @param pin
-     *         PIN.
+     * @param pin PIN.
      */
     void onPinSuccess(@NonNull PinAuthInput pin);
 
     /**
      * Error callback for {@link OtpLogic#getUserPin(AppCompatActivity, OtpPinCallback)}.
      *
-     * @param errorMessage
-     *         Error message.
+     * @param errorMessage Error message.
      */
     void onPinError(@NonNull String errorMessage);
 }

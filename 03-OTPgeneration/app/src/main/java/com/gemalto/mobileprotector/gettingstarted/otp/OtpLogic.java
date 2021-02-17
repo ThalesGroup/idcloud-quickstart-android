@@ -44,10 +44,10 @@ import com.gemalto.idp.mobile.otp.oath.OathService;
 import com.gemalto.idp.mobile.otp.oath.soft.SoftOathSettings;
 import com.gemalto.idp.mobile.otp.oath.soft.SoftOathToken;
 import com.gemalto.idp.mobile.ui.UiModule;
-import com.gemalto.idp.mobile.ui.secureinput.SecureInputBuilderV2;
+import com.gemalto.idp.mobile.ui.secureinput.SecureInputBuilder;
 import com.gemalto.idp.mobile.ui.secureinput.SecureInputService;
 import com.gemalto.idp.mobile.ui.secureinput.SecureInputUi;
-import com.gemalto.idp.mobile.ui.secureinput.SecurePinpadListenerV2;
+import com.gemalto.idp.mobile.ui.secureinput.SecureKeypadListener;
 
 import com.gemalto.mobileprotector.sdk.ProtectorConfig;
 
@@ -61,15 +61,12 @@ class OtpLogic {
     /**
      * Generates an OTP.
      *
-     * @param token
-     *         Token to be used for OTP generation.
-     * @param pin
-     *         PIN.
+     * @param token Token to be used for OTP generation.
+     * @param pin   PIN.
      * @return Generated OTP and its lifespan wrapped in OtpResult class.
-     * @throws IdpException
-     *         If error during OTP generation occures.
+     * @throws IdpException If error during OTP generation occures.
      */
-    static OtpResult generateOtp(@NonNull final SoftOathToken token, @NonNull final AuthInput pin)
+    static OtpResult generateOtp(@NonNull SoftOathToken token, @NonNull AuthInput pin)
             throws IdpException {
 
         // TODO: Get an instance of OathFactory from OathService
@@ -99,37 +96,31 @@ class OtpLogic {
     /**
      * Retrieves the PIN.
      *
-     * @param activity
-     *         Activity on which to show the {@code DialogFragment}.
-     * @param callback
-     *         Callback to receive the PIN.
+     * @param activity Activity on which to show the {@code DialogFragment}.
+     * @param callback Callback to receive the PIN.
      */
-    static void getUserPin(@NonNull final AppCompatActivity activity, @NonNull final OtpPinCallback callback) {
+    static void getUserPin(@NonNull AppCompatActivity activity, @NonNull OtpPinCallback callback) {
 
-        // TODO: create a SecureInputBuilderV2 by means of SecureInputService
+        // TODO: create a SecureInputBuilder by means of SecureInputService
 
-        // TODO: use buildPinpad() method to prepare an instance of SecureInputUi
-        // TODO: provide a new instance of SecurePinpadListenerV2 and override its methods
-
-            // TODO: in onFinish() method:
-                // TODO: propagate PinAuthInput to onPinSuccess() method of the callback
-                // TODO: wipe the instance of the builder
-                // TODO: call dismiss() method for the sDialogFragment
-
-            // TODO: in onError() method:
-                // TODO: propagate the error message to the onPinError() method of the callback
-                // TODO: wipe the instance of the builder
-                // TODO: call dismiss() method for the sDialogFragment
-
+        // TODO: use buildKeypad() method to prepare an instance of SecureInputUi
+        /*
+         * TODO: provide a new instance of SecureKeypadListener and override its methods
+         *     + in onFinish() method:
+         *          - propagate PinAuthInput to onPinSuccess() method of the callback
+         *          - wipe the instance of the builder
+         *          - call dismiss() method for the sDialogFragment
+         *      + in onError() method:
+         *          - propagate the error message to the onPinError() method of the callback
+         *          - wipe the instance of the builder
+         *          - call dismiss() method for the sDialogFragment
+         */
 
         // TODO: use the instance of SecureInputUi to get and store dialogFragment to sDialogFragment
 
         // TODO: show the dialog fragment
 
-
         // TODO: remove this when you complete the implementation
         callback.onPinError("Implementation is missing!");
     }
-
-
 }
