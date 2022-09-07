@@ -18,10 +18,10 @@ dependencies {
     implementation "com.android.support:appcompat-v7:${propAndroidSupport}"
 
     // Add Mobile Protector SDK java library
-    debugApi fileTree(dir: "${EZIO_SDK}/debug", include: ["protector-oath.aar"])
-    releaseApi fileTree(dir: "${EZIO_SDK}/release", include: ["protector-oath.aar"])
+    debugImplementation fileTree(dir: "${EZIO_SDK}/debug", include: ["protector-oath.aar"])
+    releaseImplementation fileTree(dir: "${EZIO_SDK}/release", include: ["protector-oath.aar"])
 
     // Add JNA dependency
-    api "net.java.dev.jna:jna:5.5.0@aar"
+    implementation "net.java.dev.jna:jna:5.5.0@aar"
 
 }
