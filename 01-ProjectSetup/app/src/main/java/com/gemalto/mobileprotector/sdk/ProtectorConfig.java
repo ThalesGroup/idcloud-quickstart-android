@@ -34,6 +34,7 @@ import com.gemalto.idp.mobile.core.IdpCore;
 import com.gemalto.idp.mobile.core.net.TlsConfiguration;
 import com.gemalto.idp.mobile.core.util.SecureString;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
