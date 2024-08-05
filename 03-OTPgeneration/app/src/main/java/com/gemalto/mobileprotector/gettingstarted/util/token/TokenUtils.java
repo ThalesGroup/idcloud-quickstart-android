@@ -27,8 +27,8 @@
 
 package com.gemalto.mobileprotector.gettingstarted.util.token;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.gemalto.idp.mobile.core.IdpException;
 import com.gemalto.idp.mobile.core.IdpStorageException;
