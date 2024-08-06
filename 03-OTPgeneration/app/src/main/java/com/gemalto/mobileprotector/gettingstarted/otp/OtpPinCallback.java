@@ -27,8 +27,8 @@
 
 package com.gemalto.mobileprotector.gettingstarted.otp;
 
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.gemalto.idp.mobile.authentication.mode.pin.PinAuthInput;
 

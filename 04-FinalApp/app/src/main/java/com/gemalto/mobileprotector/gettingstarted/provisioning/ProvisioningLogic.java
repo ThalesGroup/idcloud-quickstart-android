@@ -27,7 +27,7 @@
 
 package com.gemalto.mobileprotector.gettingstarted.provisioning;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.gemalto.idp.mobile.core.IdpException;
 import com.gemalto.idp.mobile.core.devicefingerprint.DeviceFingerprintSource;

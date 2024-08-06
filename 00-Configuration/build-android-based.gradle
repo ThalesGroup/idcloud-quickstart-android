@@ -2,14 +2,12 @@
 allprojects {
     ext {
         propBuildToolsVersion = "30.0.1"
-        propCompileSdkVersion = 31
+        propCompileSdkVersion = 34
         propMinSdkVersion = 23
-        propTargetSdkVersion = 31
+        propTargetSdkVersion = 34
 
-        propVersionCode = 620
-        propVersionName = "6.2.0"
-
-        propAndroidSupport = "28.0.0"
+        propVersionCode = 660
+        propVersionName = "6.6.0"
     }
 }
 

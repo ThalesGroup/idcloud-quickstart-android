@@ -18,7 +18,7 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:${propAndroidSupport}"
+    implementation "androidx.appcompat:appcompat:1.6.1"
 
     debugImplementation fileTree(dir: "${EZIO_SDK}/debug", include: ["protector-oath.aar"])
     releaseImplementation fileTree(dir: "${EZIO_SDK}/release", include: ["protector-oath.aar"])

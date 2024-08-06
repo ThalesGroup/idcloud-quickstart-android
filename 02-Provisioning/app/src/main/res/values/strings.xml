@@ -5,7 +5,7 @@
     <string name="sdk_error_placeholder">Domain: %d Code: %d\nMessage: %s</string>
 
 
-	<!--Provision Fragment-->
+    <!--Provision Fragment-->
     <string name="title_provisioning">Provisioning</string>
     <string name="user_id_provision_fragment">Enter User ID</string>
     <string name="enter_reg_code_provision_fragment">Enter Registration Code</string>
